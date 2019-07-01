@@ -20,6 +20,7 @@ export class WithMobileDoubleTap extends React.Component {
       return (
         <Hammer
           options={{
+            touchAction: 'auto',
             recognizers: {
               tap: {
                 requireFailure: 'doubletap',
