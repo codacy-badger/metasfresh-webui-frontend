@@ -15,6 +15,7 @@ import {
 } from '../actions/WindowActions';
 import { connectWS, disconnectWS } from '../utils/websockets';
 import { getTab, getData } from '../api';
+import { docStatusSelector } from '../reducers/windowHandler';
 
 import MasterWindow from '../components/app/MasterWindow';
 
@@ -221,6 +222,7 @@ class MasterWindowContainer extends Component {
 MasterWindowContainer.propTypes = {
   modal: PropTypes.object.isRequired,
   master: PropTypes.object.isRequired,
+  docStatusData: PropTypes.object.isRequired,
   breadcrumb: PropTypes.array.isRequired,
   rawModal: PropTypes.object.isRequired,
   indicator: PropTypes.string.isRequired,
@@ -243,25 +245,31 @@ MasterWindowContainer.propTypes = {
   push: PropTypes.func,
 };
 
-/**
- * @method mapStateToProps
- * @summary ToDo: Describe the method.
- * @param {object} state
- */
-const mapStateToProps = (state) => ({
-  master: state.windowHandler.master,
-  modal: state.windowHandler.modal,
-  rawModal: state.windowHandler.rawModal,
-  pluginModal: state.windowHandler.pluginModal,
-  overlay: state.windowHandler.overlay,
-  indicator: state.windowHandler.indicator,
-  includedView: state.listHandler.includedView,
-  allowShortcut: state.windowHandler.allowShortcut,
-  enableTutorial: state.appHandler.enableTutorial,
-  processStatus: state.appHandler.processStatus,
-  me: state.appHandler.me,
-  breadcrumb: state.menuHandler.breadcrumb,
-});
+const mapStateToProps = ({
+  windowHandler,
+  appHandler,
+  menuHandler,
+  listHandler,
+}) => {
+  const { master } = windowHandler;
+  const docStatusData = docStatusSelector(windowHandler);
+
+  return {
+    master,
+    docStatusData,
+    modal: windowHandler.modal,
+    rawModal: windowHandler.rawModal,
+    pluginModal: windowHandler.pluginModal,
+    overlay: windowHandler.overlay,
+    indicator: windowHandler.indicator,
+    includedView: listHandler.includedView,
+    allowShortcut: windowHandler.allowShortcut,
+    enableTutorial: appHandler.enableTutorial,
+    processStatus: appHandler.processStatus,
+    me: appHandler.me,
+    breadcrumb: menuHandler.breadcrumb,
+  };
+};
 
 export default connect(
   mapStateToProps,
