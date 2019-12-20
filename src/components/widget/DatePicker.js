@@ -33,8 +33,8 @@ class DatePicker extends Component {
    * @todo Write the documentation
    */
   componentDidMount() {
-    const { handleBackdropLock, isOpenDatePicker } = this.props;
-    handleBackdropLock && handleBackdropLock(true);
+    const { isOpenDatePicker } = this.props;
+    // handleBackdropLock && handleBackdropLock(true);
 
     if (isOpenDatePicker) {
       setTimeout(() => {
@@ -52,7 +52,7 @@ class DatePicker extends Component {
   handleBlur = date => {
     const {
       patch,
-      handleBackdropLock,
+      // handleBackdropLock,
       dispatch,
       field,
       handleChange,
@@ -87,7 +87,7 @@ class DatePicker extends Component {
 
     this.handleClose();
 
-    handleBackdropLock && handleBackdropLock(false);
+    // handleBackdropLock && handleBackdropLock(false);
   };
 
   /**
@@ -222,7 +222,7 @@ class DatePicker extends Component {
 DatePicker.propTypes = {
   dispatch: PropTypes.func.isRequired,
   handleChange: PropTypes.func,
-  handleBackdropLock: PropTypes.func,
+  // handleBackdropLock: PropTypes.func,
   patch: PropTypes.func,
   field: PropTypes.string,
   value: PropTypes.any,

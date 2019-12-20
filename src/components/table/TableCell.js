@@ -152,7 +152,7 @@ class TableCell extends PureComponent {
     }
 
     if (!readonly && tdValue !== nextTdValue) {
-      updateRow();
+      // updateRow();
     }
   }
 
@@ -173,7 +173,8 @@ class TableCell extends PureComponent {
         item.widgetType
       )
     ) {
-      if (!state) {
+      if (!state && !this.props.closeTableField) {
+        console.log('TC handleBackdropLock')
         this.props.onClickOutside();
       }
     }
@@ -188,6 +189,9 @@ class TableCell extends PureComponent {
       isEditable,
       supportFieldEdit,
     } = this.props;
+
+    console.log('TableCell handleKeyDown: ', e.key, property)
+
     const widgetData = getWidgetData(item, isEditable, supportFieldEdit);
 
     handleKeyDown(e, property, widgetData[0]);
@@ -221,6 +225,8 @@ class TableCell extends PureComponent {
       handleDoubleClick,
     } = this.props;
     const widgetData = getWidgetData(item, isEditable, supportFieldEdit);
+
+    console.log('TC handleDoubleClick: ', isEditable)
 
     if (isEditable) {
       handleDoubleClick(e, property, true, widgetData[0]);

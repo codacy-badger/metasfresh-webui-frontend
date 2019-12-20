@@ -101,6 +101,7 @@ class Table extends Component {
           }
 
           if (firstRow.id && !selectedEqual) {
+            console.log('Table componentDidUpdate shiet')
             this.selectOneProduct(firstRow.id);
           }
         }
@@ -320,6 +321,7 @@ class Table extends Component {
   };
 
   setListenTrue = () => {
+    console.log('Table setListenTrue')
     this.setState({ listenOnKeys: true });
   };
 
@@ -531,8 +533,11 @@ class Table extends Component {
   handleKeyDown = e => {
     const { keyProperty, mainTable, readonly, closeOverlays } = this.props;
     const { selected, rows, listenOnKeys, collapsedArrayMap } = this.state;
+    const { key } = e;
 
-    if (!listenOnKeys) {
+    console.log('Table handleKeyDown: ', key, listenOnKeys);
+
+    if (!listenOnKeys && key !== 'ArrowDown' && key !== 'ArrowUp') {
       return;
     }
 
@@ -547,7 +552,7 @@ class Table extends Component {
       idFocused = idActive;
     }
 
-    switch (e.key) {
+    switch (key) {
       case 'ArrowDown': {
         e.preventDefault();
 
@@ -560,10 +565,12 @@ class Table extends Component {
         );
 
         if (currentId >= array.length - 1) {
+          console.log('A')
           return;
         }
 
         if (!selectRange) {
+          console.log('B')
           this.selectOneProduct(
             array[currentId + 1],
             false,
@@ -571,6 +578,7 @@ class Table extends Component {
             this.showSelectedIncludedView([array[currentId + 1]])
           );
         } else {
+          console.log('C')
           this.selectProduct(array[currentId + 1], false, idFocused);
         }
         break;
@@ -657,6 +665,8 @@ class Table extends Component {
 
   handleDoubleClick = id => {
     const { isIncluded, onDoubleClick } = this.props;
+
+    console.log('Table handleDoubleClick: ', isIncluded)
 
     if (!isIncluded) {
       onDoubleClick && onDoubleClick(id);
@@ -1062,6 +1072,7 @@ class Table extends Component {
         handleRightClick={this.handleRightClick}
         changeListenOnTrue={this.setListenTrue}
         changeListenOnFalse={this.setListenFalse}
+        tableListenOnKeys={this.state.listenOnKeys}
         newRow={i === rows.length - 1 ? newRow : false}
         isSelected={
           (selected &&

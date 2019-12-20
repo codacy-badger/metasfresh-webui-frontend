@@ -118,7 +118,7 @@ export default class Attributes extends Component {
    * @todo Write the documentation
    */
   handleToggle = option => {
-    const { handleBackdropLock } = this.props;
+    // const { handleBackdropLock } = this.props;
     const { loading } = this.state;
 
     if (!loading) {
@@ -131,7 +131,7 @@ export default class Attributes extends Component {
         () => {
           //Method is disabling outside click in parents
           //elements if there is some
-          handleBackdropLock && handleBackdropLock(!!option);
+          // handleBackdropLock && handleBackdropLock(!!option);
 
           if (option) {
             this.handleInit();
@@ -334,7 +334,7 @@ export default class Attributes extends Component {
  */
 Attributes.propTypes = {
   patch: PropTypes.func.isRequired,
-  handleBackdropLock: PropTypes.func,
+  // handleBackdropLock: PropTypes.func,
   isModal: PropTypes.bool,
   widgetData: PropTypes.any,
   dataId: PropTypes.any,

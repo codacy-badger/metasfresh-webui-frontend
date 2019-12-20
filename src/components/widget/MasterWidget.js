@@ -254,6 +254,14 @@ class MasterWidget extends Component {
     onBlurWidget && onBlurWidget(fieldName);
   };
 
+  // handleFocus = () => {
+  //   // listenOnKeys && listenOnKeysFalse && listenOnKeysFalse();
+  // }
+
+  // handleBlur = () => {
+
+  // }
+
   /**
    * @method render
    * @summary ToDo: Describe the method.

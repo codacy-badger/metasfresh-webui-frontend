@@ -82,15 +82,17 @@ export class RawWidget extends Component {
    * DOM element outside of it's parent's tree.
    */
   focus = () => {
-    const { handleFocus, disableOnClickOutside } = this.props;
+    // const { handleFocus, disableOnClickOutside } = this.props;
     const { rawWidget } = this;
+
+    // console.log('RW focus')
 
     if (rawWidget && rawWidget.focus) {
       rawWidget.focus();
     }
 
-    disableOnClickOutside && disableOnClickOutside();
-    handleFocus && handleFocus();
+    // disableOnClickOutside && disableOnClickOutside();
+    // handleFocus && handleFocus();
   };
 
   /**
@@ -99,21 +101,29 @@ export class RawWidget extends Component {
    * @param {*} e
    */
   handleFocus = () => {
-    const { dispatch, handleFocus, listenOnKeysFalse } = this.props;
+    const {
+      dispatch,
+      handleFocus,
+      // listenOnKeysFalse,
+      // listenOnKeys,
+    } = this.props;
+
+    console.log('RW handleFocus')
 
     dispatch(disableShortcut());
-    listenOnKeysFalse && listenOnKeysFalse();
+    // listenOnKeys && listenOnKeysFalse && listenOnKeysFalse();
 
-    setTimeout(() => {
+    // setTimeout(() => {
       this.setState(
         {
           isEdited: true,
         },
         () => {
+          // console.log('handlefocus 1234')
           handleFocus && handleFocus();
         }
       );
-    }, 0);
+    // }, 0);
   };
 
   /**
@@ -127,8 +137,9 @@ export class RawWidget extends Component {
     const {
       dispatch,
       handleBlur,
-      listenOnKeysTrue,
-      enableOnClickOutside,
+      // listenOnKeys,
+      // listenOnKeysTrue,
+      // enableOnClickOutside,
     } = this.props;
 
     this.setState(
@@ -136,11 +147,13 @@ export class RawWidget extends Component {
         isEdited: false,
       },
       () => {
-        enableOnClickOutside && enableOnClickOutside();
+        console.log('RW handleBlur: ')
+        // enableOnClickOutside && enableOnClickOutside();
         dispatch(allowShortcut());
         handleBlur && handleBlur(this.willPatch(widgetField, value));
 
-        listenOnKeysTrue && listenOnKeysTrue();
+        
+        // !listenOnKeys && listenOnKeysTrue && listenOnKeysTrue();
 
         if (widgetField) {
           this.handlePatch(widgetField, value, id);
@@ -176,7 +189,9 @@ export class RawWidget extends Component {
       closeTableField();
       e.preventDefault();
 
-      this.handleBlur();
+      console.log('RW handleKeyDown')
+
+      // this.handleBlur();
 
       return this.handlePatch(property, value, null, null, true);
     }
@@ -340,7 +355,6 @@ export class RawWidget extends Component {
       id,
       range,
       onHide,
-      handleBackdropLock,
       subentity,
       widgetType,
       subentityId,
@@ -363,8 +377,6 @@ export class RawWidget extends Component {
       caption,
       viewId,
       data,
-      listenOnKeys,
-      listenOnKeysFalse,
       closeTableField,
       handleZoomInto,
       attribute,
@@ -470,7 +482,6 @@ export class RawWidget extends Component {
                 }
                 handleChange={handleChange}
                 {...{
-                  handleBackdropLock,
                   isOpenDatePicker,
                   timeZone,
                 }}
@@ -505,7 +516,6 @@ export class RawWidget extends Component {
               }
               handleChange={handleChange}
               {...{
-                handleBackdropLock,
                 isOpenDatePicker,
                 timeZone,
               }}
@@ -537,7 +547,6 @@ export class RawWidget extends Component {
               }
               tabIndex={tabIndex}
               handleChange={handleChange}
-              handleBackdropLock={handleBackdropLock}
             />
           </div>
         );
@@ -566,7 +575,6 @@ export class RawWidget extends Component {
               }
               tabIndex={tabIndex}
               handleChange={handleChange}
-              handleBackdropLock={handleBackdropLock}
             />
           </div>
         );
@@ -628,8 +636,6 @@ export class RawWidget extends Component {
             validStatus={widgetData[0].validStatus}
             newRecordCaption={fields[0].newRecordCaption}
             newRecordWindowId={fields[0].newRecordWindowId}
-            listenOnKeys={listenOnKeys}
-            listenOnKeysFalse={listenOnKeysFalse}
             closeTableField={closeTableField}
             onFocus={this.focus}
             onBlur={this.handleBlur}
@@ -904,7 +910,6 @@ export class RawWidget extends Component {
             onFocus={this.handleFocus}
             onBlur={this.handleBlur}
             fieldName={widgetField}
-            handleBackdropLock={handleBackdropLock}
             patch={option => this.handlePatch(widgetField, option)}
             tabIndex={tabIndex}
             autoFocus={autoFocus}
@@ -923,7 +928,6 @@ export class RawWidget extends Component {
             tabId={tabId}
             rowId={rowId}
             fieldName={widgetField}
-            handleBackdropLock={handleBackdropLock}
             patch={option => this.handlePatch(widgetField, option)}
             tabIndex={tabIndex}
             autoFocus={autoFocus}

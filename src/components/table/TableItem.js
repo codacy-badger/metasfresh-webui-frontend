@@ -56,6 +56,7 @@ class TableItem extends PureComponent {
     }
 
     if (focusOnFieldName && isSelected && this.autofocusCell && !activeCell) {
+      console.log('TI componentDidUpdate: ', this.props.rowId)
       // eslint-disable-next-line react/no-find-dom-node
       ReactDOM.findDOMNode(this.autofocusCell).focus();
       this.focusCell();
@@ -116,6 +117,8 @@ class TableItem extends PureComponent {
   handleDoubleClick = () => {
     const { rowId, onDoubleClick, supportOpenRecord } = this.props;
 
+    console.log('TI handleDoubleClick: ', supportOpenRecord, this.props.rowId, this.props.tableListenOnKeys)
+
     if (supportOpenRecord) {
       onDoubleClick && onDoubleClick(rowId);
     }
@@ -124,6 +127,8 @@ class TableItem extends PureComponent {
   handleKeyDown = (e, property, widgetData) => {
     const { changeListenOnTrue } = this.props;
     const { listenOnKeys, edited } = this.state;
+
+    console.log('TableItem handleKeyDown: ', e.key, property, listenOnKeys, this.props.rowId, this.props.tableListenOnKeys)
 
     switch (e.key) {
       case 'Enter':
@@ -142,7 +147,10 @@ class TableItem extends PureComponent {
       default: {
         const inp = String.fromCharCode(e.keyCode);
         if (/[a-zA-Z0-9]/.test(inp)) {
-          this.listenOnKeysTrue();
+          if (!listenOnKeys) {
+            console.log('TI handleKeyDown listenOnKeysTrue')
+            this.listenOnKeysTrue();
+          }
 
           this.handleEditProperty(e, property, true, widgetData, true);
         }
@@ -159,6 +167,7 @@ class TableItem extends PureComponent {
       (activeCell !== elem && !elem.className.includes('js-input-field')) ||
       cb
     ) {
+      console.log('TI focusCell: ', elem, activeCell, this.props.rowId, this.props.tableListenOnKeys,', cb: ', cb)
       this.setState(
         {
           activeCell: elem,
@@ -187,6 +196,8 @@ class TableItem extends PureComponent {
         this.selectedCell.clearValue();
       }
 
+      console.log('editProperty activeElement: ', document.activeElement, ', focus: ', focus, this.props.rowId, this.props.tableListenOnKeys)
+
       this.setState(
         {
           edited: property,
@@ -201,19 +212,21 @@ class TableItem extends PureComponent {
               elem.focus();
             }
 
-            const disabled = document.activeElement.querySelector(
-              '.input-disabled'
-            );
-            const readonly = document.activeElement.querySelector(
-              '.input-readonly'
-            );
+            // const disabled = document.activeElement.querySelector(
+            //   '.input-disabled'
+            // );
+            // const readonly = document.activeElement.querySelector(
+            //   '.input-readonly'
+            // );
 
-            if (disabled || readonly) {
-              this.listenOnKeysTrue();
-              this.handleEditProperty(e);
-            } else {
-              this.listenOnKeysFalse();
-            }
+            // if (disabled || readonly) {
+              // console.log('TI editProperty DISABLED OR READONLY')
+              // this.listenOnKeysTrue();
+              // this.handleEditProperty(e);
+            // } else {
+              // console.log('TI editProperty disable keys')
+              // this.listenOnKeysFalse();
+            // }
           }
         }
       );
@@ -223,19 +236,28 @@ class TableItem extends PureComponent {
   listenOnKeysTrue = () => {
     const { changeListenOnTrue } = this.props;
 
+    console.log('TI listenOnKeysTrue: ', this.props.rowId, this.props.tableListenOnKeys, this.state.listenOnKeys)
+
     this.setState({
       listenOnKeys: true,
+    }, () => {
+      // console.log('TABLE ITEM STATE CHANGED !')
+      changeListenOnTrue();
     });
-    changeListenOnTrue();
+    
   };
 
   listenOnKeysFalse = () => {
     const { changeListenOnFalse } = this.props;
 
+    console.log('TI listenOnKeysFalse')
+
     this.setState({
       listenOnKeys: false,
+    }, () => {
+      changeListenOnFalse();
     });
-    changeListenOnFalse();
+    
   };
 
   /*
@@ -278,16 +300,20 @@ class TableItem extends PureComponent {
   };
 
   handleClickOutside = e => {
-    const { changeListenOnTrue } = this.props;
+    // const { changeListenOnTrue } = this.props;
+
+    console.log('TI handleClickOutside: ', this.props.rowId)
 
     this.selectedCell && this.selectedCell.clearValue(true);
-    this.handleEditProperty(e);
+    this.handleEditProperty(e, null, false);
 
-    changeListenOnTrue();
+    // changeListenOnTrue();
   };
 
   closeTableField = e => {
     const { activeCell } = this.state;
+
+    console.log('TI closeTableField')
 
     this.handleEditProperty(e);
     this.listenOnKeysTrue();
