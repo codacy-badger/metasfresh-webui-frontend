@@ -162,11 +162,11 @@ export const getSelectionInstant = createSelector(
   (items) => items
 );
 
-const masterDataSelector = windowHandler => windowHandler.master.data;
+const masterDataSelector = (windowHandler) => windowHandler.master.data;
 
 export const docStatusSelector = createSelector(
   masterDataSelector,
-  masterData => {
+  (masterData) => {
     return {
       status: masterData.DocStatus || -1,
       action: masterData.DocAction || -1,
