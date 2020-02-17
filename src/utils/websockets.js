@@ -13,10 +13,13 @@ export function connectWS(topic, onMessageCallback) {
     return;
   }
 
+  console.log('topic: ', topic, this.sockTopic)
+
   const subscribe = ({ tries = 3 } = {}) => {
+    console.log('subscribing')
     if (this.sockClient.connected || tries <= 0) {
       this.sockSubscription = this.sockClient.subscribe(topic, (msg) => {
-        // console.log("WS: Got event on %s: %s", topic, msg.body);
+        console.log("WS: Got event on %s: %s", topic, msg.body);
         if (topic === this.sockTopic) {
           onMessageCallback(JSON.parse(msg.body));
         } else {
@@ -48,6 +51,8 @@ export function connectWS(topic, onMessageCallback) {
       heartbeatOutgoing: 4000,
     });
 
+    // in Jest we need to use `ws` as native WebSocket object is used
+    // that doesn't support `http/s` address
     if (process.env.JEST_WORKER_ID === undefined) {
       this.sockClient.webSocketFactory = socketFactory;
     }

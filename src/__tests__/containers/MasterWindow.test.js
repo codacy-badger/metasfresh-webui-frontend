@@ -11,6 +11,7 @@ import { createMemoryHistory } from 'react-router';
 import merge from 'merge';
 import thunk from 'redux-thunk';
 import promiseMiddleware from 'redux-promise';
+import { WebSocket, Server } from 'mock-socket';
 import waitForExpect from 'wait-for-expect';
 
 import { ShortcutProvider } from '../../components/keyshortcuts/ShortcutProvider';
@@ -72,9 +73,9 @@ const createInitialState = function(state = {}) {
   return res;
 }
 
-describe.only("MasterWindowContainer", () => {
+describe("MasterWindowContainer", () => {
   describe("'integration' tests:", () => {
-    it("renders without errors", async done => {
+    it.skip("renders without errors", async done => {
       const initialState = createInitialState();
       const store = createStore(
         rootReducer,
@@ -142,11 +143,114 @@ describe.only("MasterWindowContainer", () => {
 
       await waitForExpect(() => {
         wrapper.update();
+        wrapper.update();
 
         const html = wrapper.html();
         expect(html).toContain('<table');
 
         done();
+      }, 8000);
+    }, 10000);
+
+    it("renders without errors", async done => {
+      const initialState = createInitialState();
+      const store = createStore(
+        rootReducer,
+        initialState,
+        applyMiddleware(...middleware),
+      );
+      const initialProps = createInitialProps();
+      const windowType = FIXTURES_PROPS.params.windowType;
+      const docId = FIXTURES_PROPS.params.docId;
+      const tabId = layoutFixtures.layout1.tabs[0].tabId;
+      const auth = {
+        initNotificationClient: jest.fn(),
+        initSessionClient: jest.fn(),
+      };
+
+      nock(config.API_URL)
+        .defaultReplyHeaders({ 'access-control-allow-origin': '*' })
+        .get(`/window/${windowType}/${docId}/`)
+        .reply(200, dataFixtures.data1);
+
+      nock(config.API_URL)
+        .defaultReplyHeaders({ 'access-control-allow-origin': '*' })
+        .get(`/window/${windowType}/layout`)
+        .reply(200, layoutFixtures.layout1);
+
+      nock(config.API_URL)
+        .defaultReplyHeaders({ 'access-control-allow-origin': '*' })
+        .get('/userSession')
+        .reply(200, userSessionData);
+
+      nock(config.API_URL)
+        .defaultReplyHeaders({ 'access-control-allow-origin': '*' })
+        .get(`/notifications/websocketEndpoint`)
+        .reply(200, `/notifications/${userSessionData.userProfileId}`);
+
+      nock(config.API_URL)
+        .defaultReplyHeaders({ 'access-control-allow-origin': '*' })
+        .get('/notifications/all?limit=20')
+        .reply(200, notificationsData.data1);
+
+      nock(config.API_URL)
+        .defaultReplyHeaders({ 'access-control-allow-origin': '*' })
+        .get(`/window/${windowType}/${docId}/${tabId}/`)
+        .reply(200, rowFixtures.row_data1);
+
+      nock(config.API_URL)
+        .defaultReplyHeaders({ 'access-control-allow-origin': '*' })
+        .get(`/window/${windowType}/${docId}/${tabId}/?orderBy=+Line`)
+        .reply(200, rowFixtures.row_data1);
+
+      nock(config.API_URL)
+        .defaultReplyHeaders({ 'access-control-allow-origin': '*' })
+        .get(`/window/${windowType}/${docId}/field/DocAction/dropdown`)
+        .reply(200, docActionFixtures.data1);
+
+      const mockServer = new Server(config.WS_URL);
+      // console.log('SERVER: ', config.WS_URL)
+     
+      mockServer.on('connection', socket => {
+        console.log('server connected')
+        socket.on('message', data => {
+          console.log('ONMESSAGE: ', data)
+          // t.is(data, 'test message from app', 'we have intercepted the message and can assert on it');
+          socket.send('test message from mock server');
+        });
+        // socket.on('close', () => { console.log('closing')});
+      });
+
+      const wrapper = mount(
+        <Provider store={store}>
+          <ShortcutProvider hotkeys={{}} keymap={{}} >
+            <CustomRouter history={history} auth={auth}>
+              <MasterWindow {...initialProps} />
+            </CustomRouter>
+          </ShortcutProvider>
+        </Provider>
+      );
+
+        console.log('CLIENTS: ', mockServer.clients()); // array of all connected clients
+        mockServer.emit('/document/143/1000000', 'message');
+
+
+      // mockServer.clients();
+
+      await waitForExpect(() => {
+        wrapper.update();
+        wrapper.update();
+
+        // console.log('CLIENTS: ', mockServer.clients()); // array of all connected clients
+        mockServer.emit('/document/143/1000000', 'message');
+
+        // setTimeout(() => {
+        const html = wrapper.html();
+        expect(html).toContain('<table');
+      // }, 500);
+
+        mockServer.stop(done);
+        // done();
       }, 8000);
     }, 10000);
   });
